@@ -78,9 +78,7 @@ class RateUpdate extends Model
             if($response) {
                 $result = $usd * $response->exchange_rate;
                 $serverResponse = [
-                   'name' => $currency->name,
-                   'currency' => $currency->currency,
-                    'value' => round($result, 2)
+                    'result' => round($result, 2)
                 ];
             }
         }
