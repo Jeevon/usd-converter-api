@@ -35,9 +35,13 @@ class RatesController extends Controller
         $data = $request->all();
         $date = Carbon::parse($data['date'])->format('Y-m-d');
         $rate = RateUpdate::where('date', $date)->first();
-        if($rate) {
-            $response = $rate->convert($data['targetCurrency'], $data['usd']);
+
+        if(is_null($rate)) {
+            $rate = RateUpdate::latest()->first();
         }
+ 
+        $response = $rate->convert($data['targetCurrency'], $data['usd']);
+
         return $response;
     }
 }
