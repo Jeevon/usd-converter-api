@@ -39,12 +39,13 @@ class RateUpdate extends Model
         DB::transaction(function() use (&$currencies) {
             $response = self::getFloatRates();
             $date = Carbon::parse($response->pubDate)->format('Y-m-d');
-
             $rate_update = self::firstOrCreate([ 
                 'date' => $date 
             ]);
 
             $rates = [];
+            $a = [];
+       
             foreach($response->item as $rate) {
                 $name = trim($rate->targetName);
                 $currencies[$rate->targetCurrency] = $name;
@@ -52,11 +53,21 @@ class RateUpdate extends Model
                     'name' => $name,
                     'currency' => $rate->targetCurrency
                 ]);
-                $rates[] = Rate::firstOrNew([
-                    'exchange_rate' => $rate->exchangeRate,
-                    'currency_id' => $currency->id,
-                    'rate_update_id' => $rate_update->id
-                ]);
+
+                $r = Rate::where('currency_id', $currency->id)
+                    ->where('rate_update_id', $rate_update->id)
+                    ->first();
+                if($r) {
+                   $r->exchange_rate = str_replace(",", "", $rate->exchangeRate); 
+               } else {
+                    $r = new Rate([
+                        'currency_id' => $currency->id,
+                        'rate_update_id' => $rate_update->id,
+                        'exchange_rate' => str_replace(",", "", $rate->exchangeRate)
+                    ]);
+                }
+
+                $rates[] = $r;
             }
 
             $rate_update->rates()->saveMany($rates);

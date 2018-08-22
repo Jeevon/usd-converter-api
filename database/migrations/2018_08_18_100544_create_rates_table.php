@@ -21,7 +21,7 @@ class CreateRatesTable extends Migration
 
         Schema::create('rates', function (Blueprint $table) {
             $table->increments('id');
-            $table->double('exchange_rate');
+            $table->float('exchange_rate', 10, 8);
             $table->integer('rate_update_id');
             $table->integer('currency_id');
             $table->timestamps();
