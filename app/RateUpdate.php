@@ -44,8 +44,6 @@ class RateUpdate extends Model
             ]);
 
             $rates = [];
-            $a = [];
-       
             foreach($response->item as $rate) {
                 $name = trim($rate->targetName);
                 $currencies[$rate->targetCurrency] = $name;
